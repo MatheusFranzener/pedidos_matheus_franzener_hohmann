@@ -9,6 +9,7 @@ async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
             camposNecessarios: ["cpf"]
         };
     }
+    
     if (!dados.name) {
         return {
             error: "0001",
@@ -16,6 +17,7 @@ async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
             camposNecessarios: ["name"]
         };
     }
+
     if (!dados.surname) {
         return {
             error: "0001",
@@ -23,6 +25,7 @@ async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
             camposNecessarios: ["surname"]
         };
     }
+
     if (typeof dados.cpf != "string") {
         return {
             error: "0002",
@@ -31,6 +34,7 @@ async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
             tipoEsperado: "string"
         };
     }
+
     if (typeof dados.name != "string") {
         return {
             error: "0002",
@@ -39,6 +43,7 @@ async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
             tipoEsperado: "string"
         };
     }
+
     if (typeof dados.surname != "string") {
         return {
             error: "0002",

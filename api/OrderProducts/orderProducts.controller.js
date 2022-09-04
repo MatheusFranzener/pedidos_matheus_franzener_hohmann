@@ -13,15 +13,11 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    res.json(await orderProductsHandler.cadastrarOrderProducts(req.body));
+    res.json(await orderProductsHandler.cadastrarProduto(req.body));
 });
 
-router.put("/:id", async (req, res) => {
-    res.json(await orderProductsHandler.editarOrderProduct(req.params.id, req.body));
-});
-
-router.delete('/:id', async (req, res) => {
-    res.json(await orderProductsHandler.deletarOrderProduct(req.params.id));
+router.delete('/', async (req, res) => {
+    res.json(await orderProductsHandler.removerProduto(req.body));
 });
 
 module.exports = router;

@@ -9,6 +9,7 @@ async function cadastrarProduto(dados = { name: "", price: 0 }) {
             camposNecessarios: ["name"]
         };
     }
+
     if (!dados.price) {
         return {
             error: "0001",
@@ -16,6 +17,7 @@ async function cadastrarProduto(dados = { name: "", price: 0 }) {
             camposNecessarios: ["price"]
         };
     }
+
     if (typeof dados.price != "number") {
         return {
             error: "0002",
@@ -24,6 +26,7 @@ async function cadastrarProduto(dados = { name: "", price: 0 }) {
             tipoEsperado: "number"
         };
     }
+    
     if (typeof dados.name != "string") {
         return {
             error: "0002",

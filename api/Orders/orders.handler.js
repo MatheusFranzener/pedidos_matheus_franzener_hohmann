@@ -9,6 +9,7 @@ async function cadastrarOrder(dados = { userId: ""}) {
             camposNecessarios: ["userId"]
         };
     }
+
     if (typeof dados.userId != "string") {
         return {
             error: "0002",
@@ -17,6 +18,7 @@ async function cadastrarOrder(dados = { userId: ""}) {
             tipoEsperado: "string"
         };
     }
+
     if (await verificarUser(dados.userId)) {
         return {
             error: "0003",
@@ -24,6 +26,7 @@ async function cadastrarOrder(dados = { userId: ""}) {
             situation: "O user não está cadastrado!"
         };
     }
+    
     if(await verificarUserOrder(dados.userId)) {
         return {
             error: "0004",

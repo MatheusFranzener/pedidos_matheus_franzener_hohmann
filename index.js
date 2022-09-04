@@ -1,12 +1,10 @@
 const express = require('express');
+
 const app = express();
-
 const route = express.Router();
-
 const routes = require('./api/routes');
 
 app.use(route);
-
 route.use(express.json());
 
 route.get("/", (req,res) =>{
