@@ -23,7 +23,31 @@ async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
             camposNecessarios: ["surname"]
         };
     }
-
+    if (typeof dados.cpf != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado passado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.cpf,
+            tipoEsperado: "string"
+        };
+    }
+    if (typeof dados.name != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado passado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.name,
+            tipoEsperado: "string"
+        };
+    }
+    if (typeof dados.surname != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado passado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.surname,
+            tipoEsperado: "string"
+        };
+    }
+    
     const user = await crud.save(nomeTabela, undefined, dados);
     return user;
 }

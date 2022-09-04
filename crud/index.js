@@ -82,30 +82,30 @@ async function remove(Tablename, id) {
     }
 }
 
-// async function getWithFilter(Tablename, property, operator, value) {
-//     const TableRef = collection(db, Tablename);
+async function getWithFilter(Tablename, property, operator, value) {
+    const TableRef = collection(db, Tablename);
 
-//     const q = query(TableRef, where(property, operator, value));
+    const q = query(TableRef, where(property, operator, value));
 
-//     const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(q);
 
-//     const lista = [];
+    const lista = [];
 
-//     querySnapshot.forEach((doc) => {
-//         const data = {
-//             ...doc.data(),
-//             id: doc.id
-//         }
-//         lista.push(data);
+    querySnapshot.forEach((doc) => {
+        const data = {
+            ...doc.data(),
+            id: doc.id
+        }
+        lista.push(data);
 
-//     });
-//     return lista;
-// }
+    });
+    return lista;
+}
 
 module.exports = {
     save,
     get,
     getById,
     remove,
-    // getWithFilter
+    getWithFilter
 }

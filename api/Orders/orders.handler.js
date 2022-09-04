@@ -1,8 +1,7 @@
 const crud = require("../../crud");
 const nomeTabela = "Orders";
 
-async function cadastrarOrder(dados = { userId: "", status: "" }) {
-
+async function cadastrarOrder(dados = { userId: ""}) {
     if (!dados.userId) {
         return {
             error: "0001",
@@ -10,7 +9,14 @@ async function cadastrarOrder(dados = { userId: "", status: "" }) {
             camposNecessarios: ["userId"]
         };
     }
-
+    if (typeof dados.userId != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.userId,
+            tipoEsperado: "string"
+        };
+    }
     if (await verificarUser(dados.userId)) {
         return {
             error: "0003",
@@ -18,16 +24,18 @@ async function cadastrarOrder(dados = { userId: "", status: "" }) {
             situation: "O user não está cadastrado!"
         };
     }
-
     if(await verificarUserOrder(dados.userId)) {
         return {
             error: "0004",
             message: "User já possui uma order!"
         };
     }
+    
+    const pedidosUser = await crud.getWithFilter("Orders", "userId", "==", dados.userId);
 
+    dados.number = pedidosUser.length + 1;
     dados.status = "Aberto";
-
+   
     const order = await crud.save(nomeTabela, undefined, dados);
     return order;
 }
@@ -44,17 +52,18 @@ async function verificarUser(idUser) {
 }
 
 async function verificarUserOrder(idUser){
-    let naoCadastrado = false;
-    const listaOrders = await crud.get("Orders");
-
-    for(const id of listaOrders){
-        if(id == idUser && listaOrders.status == "Aberto"){
-            naoCadastrado = true
-            return naoCadastrado;
+    let userOrder = false;
+    
+    const pedidos = await crud.getWithFilter("Orders", "userId", "==", idUser);
+    
+    for (const pedido of pedidos) {
+        if (pedido.status == "Aberto") {
+            userOrder = true;
+            return userOrder;
         }
     }
 
-    return naoCadastrado;
+    return userOrder;
 }
 
 async function buscarOrders() {
@@ -67,9 +76,13 @@ async function buscarOrder(id) {
     return order;
 }
 
-async function editarOrder(id, user) {
-    const orderEditada = await crud.save("Orders", id, user);
-    return orderEditada;
+async function finalizarOrder(id) {
+    const order = await crud.getById("Orders", id);
+
+    order.status = "Finalizado";
+
+    const orderFinalizada = await crud.save("Orders", id, order);
+    return orderFinalizada;
 }
 
 async function deletarOrder(id) {
@@ -81,6 +94,6 @@ module.exports = {
     cadastrarOrder,
     buscarOrders,
     buscarOrder,
-    editarOrder,
+    finalizarOrder,
     deletarOrder
 }

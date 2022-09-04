@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-    res.json(await orderHandler.editarOrder(req.params.id, req.body));
+    res.json(await orderHandler.finalizarOrder(req.params.id));
 });
 
 router.delete('/:id', async (req, res) => {

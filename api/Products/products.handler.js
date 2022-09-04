@@ -16,13 +16,20 @@ async function cadastrarProduto(dados = { name: "", price: 0 }) {
             camposNecessarios: ["price"]
         };
     }
-
     if (typeof dados.price != "number") {
         return {
             error: "0002",
             message: "O tipo de dado não corresponde ao esperado!",
             tipoDeDado: typeof dados.price,
             tipoEsperado: "number"
+        };
+    }
+    if (typeof dados.name != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.name,
+            tipoEsperado: "string"
         };
     }
 
