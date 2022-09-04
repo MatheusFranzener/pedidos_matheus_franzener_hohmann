@@ -10,7 +10,7 @@ async function cadastrarOrderProducts(dados = { productId: "", quantity: 0, orde
         };
     }
 
-    if(!dados.orderId){
+    if (!dados.orderId) {
         return {
             error: "0001",
             message: "Preencha os campos da requisição!",
@@ -18,7 +18,7 @@ async function cadastrarOrderProducts(dados = { productId: "", quantity: 0, orde
         };
     }
 
-    if(!dados.quantity || !(dados.quantity > 0)){
+    if (!dados.quantity || !(dados.quantity > 0)) {
         return {
             error: "0001",
             message: "Preencha os campos da requisição!",
@@ -26,12 +26,21 @@ async function cadastrarOrderProducts(dados = { productId: "", quantity: 0, orde
         };
     }
 
-    if(typeof dados.quantity != "number"){
+    if (typeof dados.quantity != "number") {
         return {
             error: "0002",
             message: "O tipo de dado não corresponde ao esperado!",
             tipoDeDado: typeof dados.quantity,
             tipoEsperado: "number"
+        };
+    }
+
+    if (typeof dados.productId != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.productId,
+            tipoEsperado: "string"
         };
     }
 
@@ -43,11 +52,28 @@ async function cadastrarOrderProducts(dados = { productId: "", quantity: 0, orde
         };
     }
 
+    if (typeof dados.orderId != "string") {
+        return {
+            error: "0002",
+            message: "O tipo de dado não corresponde ao esperado!",
+            tipoDeDado: typeof dados.orderId,
+            tipoEsperado: "string"
+        };
+    }
+
     if (await verificarOrder(dados.orderId)) {
         return {
             error: "0003",
             message: "Not found!",
             situation: "A order não está cadastrada!"
+        };
+    }
+
+    if (await statusOrder(dados.orderId)) {
+        return {
+            error: "0005",
+            message: "Erro ao cadastrar!",
+            situation: "A order já está finalizada!"
         };
     }
 
@@ -75,6 +101,18 @@ async function verificarOrder(orderId) {
         return naoCadastrado;
     }
     return naoCadastrado;
+}
+
+async function statusOrder(orderId) {
+    let disponivel = false;
+
+    const order = await crud.getById("Orders", orderId);
+    if (order.status == "Finalizado") {
+        disponivel = true;
+        return disponivel;
+    }
+
+    return disponivel;
 }
 
 async function buscarOrderProducts() {
