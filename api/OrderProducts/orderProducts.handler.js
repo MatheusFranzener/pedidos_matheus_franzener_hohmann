@@ -1,26 +1,53 @@
 const crud = require("../../crud");
 const nomeTabela = "OrderProducts";
 
-async function cadastrarProduto(dados = { productId: "", quantity: 0, orderId: "" }) {
-    if (!dados.productId) {
+async function cadastrarProduto(dados) {
+
+    if (Object.keys(dados).length != 3) {
         return {
             error: "0001",
+            message: "Preencha somente os dados necessários!",
+            camposNecessarios: ["productId", "quantity", "orderId"]
+        };
+    }
+
+    if (!dados.productId) {
+        return {
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["productId"]
         };
     }
 
+    if (typeof dados.productId != "string") {
+        return {
+            error: "0003",
+            message: "O tipo de dado do campo [productId] não corresponde ao esperado!",
+            tipoDeDado: typeof dados.productId,
+            tipoEsperado: "string"
+        };
+    }
+
     if (!dados.orderId) {
         return {
-            error: "0001",
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["orderId"]
         };
     }
 
+    if (typeof dados.orderId != "string") {
+        return {
+            error: "0003",
+            message: "O tipo de dado do campo [orderId] não corresponde ao esperado!",
+            tipoDeDado: typeof dados.orderId,
+            tipoEsperado: "string"
+        };
+    }
+
     if (!dados.quantity || !(dados.quantity > 0)) {
         return {
-            error: "0001",
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["quantity"]
         };
@@ -28,52 +55,31 @@ async function cadastrarProduto(dados = { productId: "", quantity: 0, orderId: "
 
     if (typeof dados.quantity != "number") {
         return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
+            error: "0003",
+            message: "O tipo de dado do campo [quantity] não corresponde ao esperado!",
             tipoDeDado: typeof dados.quantity,
             tipoEsperado: "number"
         };
     }
 
-    if (typeof dados.productId != "string") {
-        return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
-            tipoDeDado: typeof dados.productId,
-            tipoEsperado: "string"
-        };
-    }
-
     if (await verificarProduct(dados.productId)) {
         return {
-            error: "0003",
-            message: "Not found!",
-            situation: "O product não está cadastrado!"
-        };
-    }
-
-    if (typeof dados.orderId != "string") {
-        return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
-            tipoDeDado: typeof dados.orderId,
-            tipoEsperado: "string"
+            error: "0005",
+            message: "O product não foi encontrado!"
         };
     }
 
     if (await verificarOrder(dados.orderId)) {
         return {
-            error: "0003",
-            message: "Not found!",
-            situation: "A order não está cadastrada!"
+            error: "0005",
+            message: "A order não foi encontrada!"
         };
     }
 
-    if (await statusOrder(dados.orderId)) {
+    if (await verificarStatusOrder(dados.orderId)) {
         return {
-            error: "0005",
-            message: "Erro ao cadastrar!",
-            situation: "A order já está finalizada!"
+            error: "0006",
+            message: "A order já está finalizada!"
         };
     }
 
@@ -82,8 +88,9 @@ async function cadastrarProduto(dados = { productId: "", quantity: 0, orderId: "
     for (const produto of novoProduto) {
         if (produto.productId == dados.productId) {
             produto.quantity += dados.quantity;
-            const produtoAtualizado = await crud.save("OrderProducts", produto.id, produto);
-            return produtoAtualizado;
+
+            const orderProductAtualizada = await crud.save("OrderProducts", produto.id, produto);
+            return orderProductAtualizada;
         }
     }
 
@@ -91,26 +98,53 @@ async function cadastrarProduto(dados = { productId: "", quantity: 0, orderId: "
     return order;
 }
 
-async function removerProduto(dados = { productId: "", quantity: 0, orderId: "" }) {
-    if (!dados.productId) {
+async function removerProduto(dados) {
+
+    if (Object.keys(dados).length != 3) {
         return {
             error: "0001",
+            message: "Preencha somente os dados necessários!",
+            camposNecessarios: ["productId", "quantity", "orderId"]
+        };
+    }
+
+    if (!dados.productId) {
+        return {
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["productId"]
         };
     }
 
+    if (typeof dados.productId != "string") {
+        return {
+            error: "0003",
+            message: "O tipo de dado do campo [productId] não corresponde ao esperado!",
+            tipoDeDado: typeof dados.productId,
+            tipoEsperado: "string"
+        };
+    }
+
     if (!dados.orderId) {
         return {
-            error: "0001",
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["orderId"]
         };
     }
 
+    if (typeof dados.orderId != "string") {
+        return {
+            error: "0003",
+            message: "O tipo de dado do campo [orderId] não corresponde ao esperado!",
+            tipoDeDado: typeof dados.orderId,
+            tipoEsperado: "string"
+        };
+    }
+
     if (!dados.quantity || !(dados.quantity > 0)) {
         return {
-            error: "0001",
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["quantity"]
         };
@@ -118,58 +152,38 @@ async function removerProduto(dados = { productId: "", quantity: 0, orderId: "" 
 
     if (typeof dados.quantity != "number") {
         return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
+            error: "0003",
+            message: "O tipo de dado do campo [quantity] não corresponde ao esperado!",
             tipoDeDado: typeof dados.quantity,
             tipoEsperado: "number"
         };
     }
 
-    if (typeof dados.productId != "string") {
-        return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
-            tipoDeDado: typeof dados.productId,
-            tipoEsperado: "string"
-        };
-    }
 
     if (await verificarProduct(dados.productId)) {
         return {
-            error: "0003",
-            message: "Not found!",
-            situation: "O product não está cadastrado!"
-        };
-    }
-
-    if (typeof dados.orderId != "string") {
-        return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
-            tipoDeDado: typeof dados.orderId,
-            tipoEsperado: "string"
+            error: "0005",
+            message: "O product não foi encontrado!"
         };
     }
 
     if (await verificarOrder(dados.orderId)) {
         return {
-            error: "0003",
-            message: "Not found!",
-            situation: "A order não está cadastrada!"
-        };
-    }
-
-    if (await statusOrder(dados.orderId)) {
-        return {
             error: "0005",
-            message: "Erro ao cadastrar!",
-            situation: "A order já está finalizada!"
+            message: "A order não foi encontrada!"
         };
     }
 
-    const orderProduct = await crud.getWithFilter("OrderProducts", "orderId", "==", dados.orderId);
+    if (await verificarStatusOrder(dados.orderId)) {
+        return {
+            error: "0006",
+            message: "A order já está finalizada!"
+        };
+    }
 
-    for (const produto of orderProduct) {
+    const removerProduct = await crud.getWithFilter("OrderProducts", "orderId", "==", dados.orderId);
+
+    for (const produto of removerProduct) {
         if (produto.productId == dados.productId) {
             produto.quantity -= dados.quantity;
             if (produto.quantity <= 0) {
@@ -183,9 +197,8 @@ async function removerProduto(dados = { productId: "", quantity: 0, orderId: "" 
     }
 
     return {
-        error: "0003",
-        message: "Not found!",
-        situation: "O product não existe na order!"
+        error: "0007",
+        message: "O product não existe na order!"
     };
 }
 
@@ -195,42 +208,54 @@ async function buscarOrderProducts() {
 }
 
 async function buscarOrderProduct(id) {
-    const orderProduct = await crud.getById("OrderProducts", id);
-    return orderProduct;
+    try {
+        const orderProduct = await crud.getById("OrderProducts", id);
+        return orderProduct;
+    } catch (erro) {
+        return {
+            error: "0005",
+            message: "OrderProduct não encontrada!"
+        }
+    }
 }
 
 async function verificarProduct(productId) {
     let naoCadastrado = false;
+
     try {
         await crud.getById("Products", productId);
     } catch (erro) {
         naoCadastrado = true;
         return naoCadastrado;
     }
+
     return naoCadastrado;
 }
 
 async function verificarOrder(orderId) {
     let naoCadastrado = false;
+
     try {
         await crud.getById("Orders", orderId);
     } catch (erro) {
         naoCadastrado = true;
         return naoCadastrado;
     }
+
     return naoCadastrado;
 }
 
-async function statusOrder(orderId) {
-    let disponivel = false;
+async function verificarStatusOrder(orderId) {
+    let statusDisponivel = false;
 
     const order = await crud.getById("Orders", orderId);
+
     if (order.status == "Finalizado") {
-        disponivel = true;
-        return disponivel;
+        statusDisponivel = true;
+        return statusDisponivel;
     }
 
-    return disponivel;
+    return statusDisponivel;
 }
 
 module.exports = {

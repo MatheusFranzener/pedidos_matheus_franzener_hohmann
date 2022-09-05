@@ -1,58 +1,67 @@
 const crud = require("../../crud");
 const nomeTabela = "Users";
 
-async function cadastrarUser(dados = { cpf: "", name: "", surname: "" }) {
-    if (!dados.cpf) {
+async function cadastrarUser(dados) {
+
+    if (Object.keys(dados).length != 3) {
         return {
             error: "0001",
-            message: "É necessário preencher o cpf!",
-            camposNecessarios: ["cpf"]
-        };
-    }
-    
-    if (!dados.name) {
-        return {
-            error: "0001",
-            message: "É necessário preencher o name!",
-            camposNecessarios: ["name"]
+            message: "Preencha somente os campos necessários!",
+            camposNecessarios: ["cpf", "name", "surname"]
         };
     }
 
-    if (!dados.surname) {
+    if (!dados.cpf) {
         return {
-            error: "0001",
-            message: "É necessário preencher o surname!",
-            camposNecessarios: ["surname"]
+            error: "0002",
+            message: "Preencha os campos da requisição!",
+            camposNecessarios: ["cpf"]
         };
     }
 
     if (typeof dados.cpf != "string") {
         return {
-            error: "0002",
-            message: "O tipo de dado passado não corresponde ao esperado!",
+            error: "0003",
+            message: "O tipo de dado do campo [cpf] não corresponde ao esperado!",
             tipoDeDado: typeof dados.cpf,
             tipoEsperado: "string"
         };
     }
 
-    if (typeof dados.name != "string") {
+    if (!dados.name) {
         return {
             error: "0002",
-            message: "O tipo de dado passado não corresponde ao esperado!",
+            message: "Preencha os campos da requisição!",
+            camposNecessarios: ["name"]
+        };
+    }
+
+    if (typeof dados.name != "string") {
+        return {
+            error: "0003",
+            message: "O tipo de dado do campo [name] não corresponde ao esperado!",
             tipoDeDado: typeof dados.name,
             tipoEsperado: "string"
         };
     }
 
-    if (typeof dados.surname != "string") {
+    if (!dados.surname) {
         return {
             error: "0002",
-            message: "O tipo de dado passado não corresponde ao esperado!",
+            message: "Preencha os campos da requisição!",
+            camposNecessarios: ["surname"]
+        };
+    }
+
+    if (typeof dados.surname != "string") {
+        return {
+            error: "0003",
+            message: "O tipo de dado do campo [surname] não corresponde ao esperado!",
             tipoDeDado: typeof dados.surname,
             tipoEsperado: "string"
         };
     }
-    
+
     const user = await crud.save(nomeTabela, undefined, dados);
     return user;
 }
@@ -63,11 +72,27 @@ async function buscarUsers() {
 }
 
 async function buscarUser(id) {
-    const user = await crud.getById("Users", id);
-    return user;
+    try {
+        const user = await crud.getById("Users", id);
+        return user;
+    } catch (erro) {
+        return {
+            error: "0005",
+            message: "User não encontrado!"
+        }
+    }
 }
 
 async function editarUser(id, user) {
+    
+    if (Object.keys(user).length != 3) {
+        return {
+            error: "0001",
+            message: "Preencha somente os campos necessários!",
+            camposNecessarios: ["cpf", "name", "surname"]
+        };
+    }
+
     const userEditado = await crud.save("Users", id, user);
     return userEditado;
 }

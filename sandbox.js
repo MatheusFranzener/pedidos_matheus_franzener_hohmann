@@ -1,20 +1,20 @@
-const crud = require("./crud");
+// const crud = require("./crud");
 
-const userHandler = require("./api/Users/users.handler");
-const productsHandler = require("./api/Products/products.handler");
-const orderHandler = require("./api/Orders/orders.handler");
+// const userHandler = require("./api/Users/users.handler");
+// const productsHandler = require("./api/Products/products.handler");
+// const orderHandler = require("./api/Orders/orders.handler");
 
-async function executar() {
-    const user = {
-        cpf: "123",
-        name: "matheus",
-        surname: "franzener"
-    };
+// async function executar() {
+//     const user = {
+//         cpf: "123",
+//         name: "matheus",
+//         surname: "franzener"
+//     };
 
-    const resultado = await userHandler.cadastrarUser(user);
+//     const resultado = await userHandler.cadastrarUser(user);
 
-    console.log(resultado);
-}
+//     console.log(resultado);
+// }
 
 // async function executar() {
 //     const product = {
@@ -37,4 +37,4 @@ async function executar() {
 //     console.log(resultado);
 // }
 
-executar();
+// executar();

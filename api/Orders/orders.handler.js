@@ -1,10 +1,19 @@
 const crud = require("../../crud");
 const nomeTabela = "Orders";
 
-async function cadastrarOrder(dados = { userId: ""}) {
-    if (!dados.userId) {
+async function cadastrarOrder(dados) {
+
+    if (Object.keys(dados).length != 1) {
         return {
             error: "0001",
+            message: "Preencha somente os campos necessários!",
+            camposNecessarios: ["userId"]
+        }
+    }
+
+    if (!dados.userId) {
+        return {
+            error: "0002",
             message: "Preencha os campos da requisição!",
             camposNecessarios: ["userId"]
         };
@@ -12,8 +21,8 @@ async function cadastrarOrder(dados = { userId: ""}) {
 
     if (typeof dados.userId != "string") {
         return {
-            error: "0002",
-            message: "O tipo de dado não corresponde ao esperado!",
+            error: "0003",
+            message: "O tipo de dado do campo [userId] não corresponde ao esperado!",
             tipoDeDado: typeof dados.userId,
             tipoEsperado: "string"
         };
@@ -21,44 +30,45 @@ async function cadastrarOrder(dados = { userId: ""}) {
 
     if (await verificarUser(dados.userId)) {
         return {
-            error: "0003",
-            message: "Not found!",
-            situation: "O user não está cadastrado!"
+            error: "0005",
+            message: "User não encontrado!"
         };
     }
-    
-    if(await verificarUserOrder(dados.userId)) {
+
+    if (await verificarUserOrder(dados.userId)) {
         return {
             error: "0004",
             message: "User já possui uma order!"
         };
     }
-    
+
     const pedidosUser = await crud.getWithFilter("Orders", "userId", "==", dados.userId);
 
     dados.number = pedidosUser.length + 1;
     dados.status = "Aberto";
-   
+
     const order = await crud.save(nomeTabela, undefined, dados);
     return order;
 }
 
 async function verificarUser(idUser) {
     let naoCadastrado = false;
+
     try {
         await crud.getById("Users", idUser);
     } catch (erro) {
         naoCadastrado = true;
         return naoCadastrado;
     }
+
     return naoCadastrado;
 }
 
-async function verificarUserOrder(idUser){
+async function verificarUserOrder(idUser) {
     let userOrder = false;
-    
+
     const pedidos = await crud.getWithFilter("Orders", "userId", "==", idUser);
-    
+
     for (const pedido of pedidos) {
         if (pedido.status == "Aberto") {
             userOrder = true;
@@ -75,17 +85,30 @@ async function buscarOrders() {
 }
 
 async function buscarOrder(id) {
-    const order = await crud.getById("Orders", id);
-    return order;
+    try {
+        const order = await crud.getById("Orders", id);
+        return order;
+    } catch (erro) {
+        return {
+            error: "0005",
+            message: "Order não encontrada!"
+        }
+    }
 }
 
 async function finalizarOrder(id) {
-    const order = await crud.getById("Orders", id);
+    try {
+        const order = await crud.getById("Orders", id);
+        order.status = "Finalizado";
 
-    order.status = "Finalizado";
-
-    const orderFinalizada = await crud.save("Orders", id, order);
-    return orderFinalizada;
+        const orderFinalizada = await crud.save("Orders", id, order);
+        return orderFinalizada;
+    } catch (erro) {
+        return {
+            error: "0005",
+            message: "Order não encontrada!"
+        }
+    }
 }
 
 async function deletarOrder(id) {
